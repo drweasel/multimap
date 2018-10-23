@@ -242,7 +242,7 @@ public:
 	{
 		size_type slot = lookup_slot(key);
 		return slot == NIL
-			? const_iterator()
+			? end()
 			: const_iterator(this,slot);
 	}
 
@@ -250,20 +250,20 @@ public:
 	{
 		size_type slot = lookup_slot(key);
 		return slot == NIL
-			? iterator()
+			? end()
 			: iterator(this,slot);
 	}
 
-	std::pair<iterator,bool> insert(value_type&& value)
+	iterator insert(value_type&& value)
 	{
 		if (++size_ >= grow_threshold_)
 			grow();
 		size_type h = hash_key(value.first);
 		size_type slot = insert(h,std::forward<value_type>(value));
-		return { iterator(this,slot),true };
+		return iterator(this,slot);
 	}
 
-	inline std::pair<iterator,bool> insert(const value_type& value)
+	inline iterator insert(const value_type& value)
 	{
 		return insert(value_type(value));
 	}
@@ -287,7 +287,7 @@ public:
 	}
 
 	template< typename... Args >
-	inline std::pair<iterator,bool> emplace(Args&&... args)
+	inline iterator emplace(Args&&... args)
 	{
 		return insert(value_type(std::forward<Args>(args)...));
 	}
